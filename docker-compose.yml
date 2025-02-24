@@ -1,0 +1,45 @@
+include:
+  - ./matchmaking-service/docker-compose.yml
+
+services:
+  authentication:
+    build:
+      context: ./authentication-service
+      dockerfile: Dockerfile
+    container_name: auth-service
+    ports:
+      - "3000:3000"
+    networks:
+      - game-network
+    env_file:
+      - ./authentication-service/.env
+    environment:
+      - NODE_ENV=production
+    volumes:
+      - ./authentication-service:/app
+      - /app/node_modules
+      - ./authentication-service/src/database:/app/database # Own database
+      - ./matchmaking-service/data:/app/data:ro # Acces to matchmaking database with read-only privileges
+  
+  matchmaking:
+    build:
+      context: ./matchmaking-service
+      dockerfile: Dockerfile
+    container_name: matchmaking-service
+    ports:
+      - "3001:3000"
+    networks:
+      - game-network
+    depends_on:
+      - authentication
+      - sqlite
+    volumes:
+      - ./matchmaking-service:/app
+      - /app/node_modules
+      - ./authentication-service/src/database:/app/database:ro # Acess to authentication service with read-only privileges
+    environment:
+      - NODE_ENV=production
+
+networks:
+  game-network:
+    driver: bridge

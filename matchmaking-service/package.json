@@ -10,6 +10,7 @@
     "test:join-queue": "node scripts/test-join-queue.js",
     "test:matching": "node scripts/test-matching.js",
     "test:frontend": "npx http-server tests/frontend -p 8080",
+    "test:api": "node scripts/test-api-communication.js",
     "prepare": "husky",
     "lint": "eslint . --fix",
     "format": "prettier --write .",
@@ -40,6 +41,7 @@
     "fastify": "^5.2.1",
     "fastify-plugin": "^5.0.1",
     "knex": "^3.1.0",
+    "node-fetch": "^3.3.2",
     "sqlite3": "^5.1.7"
   },
   "devDependencies": {

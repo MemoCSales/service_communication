@@ -4,7 +4,7 @@ import fastifyCors from '@fastify/cors';
 import dotenv from 'dotenv';
 import { createAccountRoute } from './routes/registration-route.js';
 import { createAuthenticationRoute } from './routes/authentication-route.js';
-import { matchmakingDb } from './database/connection.js';
+import { getUserByEmail, getUserById } from './services/database-service.js';
 
 dotenv.config();
 
@@ -29,22 +29,25 @@ fastify.get('/', (request, reply) => {
   return { message: 'Fastify server running' };
 });
 
-fastify.get('/test-matchmaking-db', async(request, reply) => {
-    try {
-      const matches = await matchmakingDb('matchmaking').select('*');
-      reply.send({
-        message: 'Successfully fetching matchmaking table information',
-        matchCount: matches.length,
-        matches
-      });
-    } catch (error) {
-      console.error('Database error:', error);
-      reply.status(500).send({
-        error: 'Failed to fetch matchmaking table information',
-        details: error.message
-      });
-    }
+  fastify.get('/api/test', async(request, reply) => {
+    return { message: 'Authentication service API wordking'};
   });
+
+fastify.get('/api/users/:id', async (request, reply) => {
+  try {
+    const user = await getUserById(request.params.id);
+    if (!user) {
+      reply.status(404).send({ error: 'User not found' });
+      return;
+    }
+    // Don't send password in response
+    const { password, ...userData } = user;
+    reply.send(userData);
+  } catch (error) {
+    console.error('Detailed error:', error);
+    reply.status(500).send({ error: 'Internal server error' });
+  }
+});
 
 try {
   await fastify.listen({ port: 3000, host: '0.0.0.0' });

@@ -1,17 +1,16 @@
-import { authDb } from '../db/connection.js';
 import { User } from '../models/User.js';
 
 export const userRoutes = async (fastify) => {
   // GET endpoint to retrieve all users
-  fastify.get('/users', async (request, reply) => {
-    try {
-      const users = await authDb('users').select('*');
+  fastify.get('/users/:id', async (request, reply) => {
+      const users = await User.findById(request.params.id);
+      if (!user) {
+        reply.code(404).send({
+          error: 'User not found'
+        });
+        return;
+      }
       reply.send(users);
-    } catch (error) {
-      reply.code(500).send({
-        error: 'Failed to fetch users',
-      });
-    }
   });
 
   // POST endpoint
@@ -23,13 +22,21 @@ export const userRoutes = async (fastify) => {
   });
 
   // GET endpoint
-  fastify.get('/users/:id', async (request, reply) => {
-    const user = await User.findById(request.params.id);
+fastify.get('/api/users/:id', async (request, reply) => {
+  try {
+    const user = await getUserByEmail(request.params.id);
     if (!user) {
-      reply.code(404).send({
-        error: 'User not found',
+      reply.status(404).send({
+        error: 'User not found'
       });
+      return;
     }
-    reply.send(user);
-  });
-};
+    const { password, ...userData } = user;
+    reply.send(userData);
+  } catch (error) {
+    reply.status(500).send({
+      error: 'Internatl server error'
+    });
+  }
+});
+}

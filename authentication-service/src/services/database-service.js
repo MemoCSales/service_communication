@@ -14,6 +14,12 @@ export const getUserByEmail = async (email) => {
     .first();
 };
 
+export const getUserById = async (id) => {
+  return await authDb('users')
+  .where({ id: id })
+  .first();
+};
+
 export const getUserByDisplayName = async (displayName) => {
   return await authDb('users')
     .where({ displayName })

@@ -1,4 +1,4 @@
-import { authDb, matchmakingDb } from '../../db/connection.js';
+import { matchmakingDb } from '../../db/connection.js';
 
 // Queue to store waiting players
 const matchmakingQueue = [];
@@ -11,8 +11,9 @@ const messageHandler = async (message, connection) => {
     case 'joinQueue':
       try {
         // Verify user exists
-        const user = await authDb('users').where({ id: data.userId }).first();
-        if (!user) {
+        const response = await fetch (`${AUTH_SERVICE_URL}/api/users/${data.userId}`);
+        const user = await response.json();
+        if (!user || !response.ok) {
           connection.socket.send(
             JSON.stringify({
               type: 'error',

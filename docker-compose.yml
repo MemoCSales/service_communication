@@ -18,8 +18,7 @@ services:
     volumes:
       - ./authentication-service:/app
       - /app/node_modules
-      - ./authentication-service/src/database:/app/database # Own database
-      - ./matchmaking-service/data:/app/data:ro # Acces to matchmaking database with read-only privileges
+      - ./authentication-service/src/database:/app/database
   
   matchmaking:
     build:
@@ -36,7 +35,7 @@ services:
     volumes:
       - ./matchmaking-service:/app
       - /app/node_modules
-      - ./authentication-service/src/database:/app/database:ro # Acess to authentication service with read-only privileges
+      - ./matchmaking-service/data:/app/data
     environment:
       - NODE_ENV=production
 

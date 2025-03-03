@@ -1,5 +1,7 @@
 import { matchmakingDb } from '../../db/connection.js';
 
+const AUTH_SERVICE_URL = 'http://authentication:3000';
+
 // Queue to store waiting players
 const matchmakingQueue = [];
 
@@ -281,7 +283,7 @@ const messageHandler = async (message, connection) => {
         const opponent = matchmakingQueue.find((p) => p.id === opponentId);
 
         if (opponent) {
-          opponent.socket.sned(
+          opponent.socket.send(
             JSON.stringify({
               type: 'matchCancelled',
               message: 'Your opponent declined the match',
